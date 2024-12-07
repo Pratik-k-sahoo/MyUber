@@ -11,6 +11,14 @@ module.exports.registerUser = async (req, res, next) => {
 
 	try {
 		const { fullname, email, password } = req.body;
+
+    const isUserAlreadyRegistered = await User.findOne({ email });
+		if (isUserAlreadyRegistered) {
+			return res
+				.status(400)
+				.json({ message: "User already registered with this email" });
+		}
+
 		const hashedPassword = await User.hashPassword(password);
 
 		const user = await createUser({
@@ -25,6 +33,12 @@ module.exports.registerUser = async (req, res, next) => {
 		}
 
 		const token = user.generateAuthToken();
+
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 3600000,
+		});
 
 		return res.status(201).json({ token, user });
 	} catch (error) {
