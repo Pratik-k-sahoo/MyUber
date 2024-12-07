@@ -116,3 +116,73 @@ Authenticates a user with their email and password, returning a JWT token upon s
 	}
 }
 ```
+
+## User Profile
+
+### Endpoint
+
+`GET /api/user/profile`
+
+### Description
+
+Retrieves the profile information of the authenticated user. This endpoint requires a valid JWT token for authentication.
+
+### Headers
+
+- **Authorization**: `Bearer <token>` (string, required): The JWT token obtained upon login or registration.
+
+### Response Body
+
+- **user** (object)
+  - **fullname** (object)
+    - **firstName** (string): User's first name.
+    - **lastName** (string): User's last name.
+  - **email** (string): User's email address.
+
+#### Example Response Body
+
+```json
+{
+	"user": {
+		"fullname": {
+			"firstName": "John",
+			"lastName": "Doe"
+		},
+		"email": "john.doe@example.com"
+	}
+}
+```
+
+## User Logout
+
+### Endpoint
+
+`POST /api/users/logout`
+
+### Description
+
+Logs out the authenticated user by invalidating their JWT token. This endpoint requires a valid JWT token for authentication.
+
+### Headers
+
+- **Authorization**: `Bearer <token>` (string, required): The JWT token obtained upon login or registration.
+
+### Response Body
+
+- **message** (string): Confirmation message indicating successful logout.
+
+#### Example Response Body
+
+```json
+{
+	"message": "Successfully logged out"
+}
+```
+
+## Authentication Middleware
+
+The authentication middleware ensures that only authenticated users can access certain endpoints. It verifies the presence and validity of the JWT token in the request headers.
+
+## JWT Token Blacklisting
+
+JWT token blacklisting is used to invalidate tokens upon user logout. This ensures that a logged-out user cannot use the same token to access protected endpoints.
