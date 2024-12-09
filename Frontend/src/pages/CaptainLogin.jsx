@@ -1,16 +1,38 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../slice/captainSlice";
 
 const CaptainLogin = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [captainData, setCaptainData] = useState({});
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+	const [captainData, setCaptainData] = useState({
+    email: "",
+    password: "",
+  });
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setCaptainData({ email, password });
-		setEmail("");
-		setPassword("");
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captainData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if(response.status === 200) {
+        dispatch(login(response.data.captain));
+        setCaptainData({
+          email: "",
+          password: "",
+        });
+        navigate("/captain/home");
+      }
+    } catch (error) {
+      console.log(error);      
+    }
+		
 	};
 
 	return (
@@ -26,9 +48,14 @@ const CaptainLogin = () => {
 						What&apos;s your email address?
 					</h3>
 					<input
-						value={email}
+						value={captainData.email}
 						name="email"
-						onChange={(e) => setEmail(e.target.value)}
+						onChange={(e) =>
+							setCaptainData({
+								...captainData,
+								email: e.target.value,
+							})
+						}
 						type="email"
 						required
 						placeholder="email@example.com"
@@ -36,16 +63,19 @@ const CaptainLogin = () => {
 					/>
 					<h3 className="text-lg font-medium mb-2">Enter Password</h3>
 					<input
-						value={password}
+						value={captainData.password}
 						name="password"
-						onChange={(e) => setPassword(e.target.value)}
+						onChange={(e) => setCaptainData({
+              ...captainData,
+              password: e.target.value,
+            })}
 						type="password"
 						required
 						placeholder="Atleast 6 digits"
 						className="bg-[#eeeeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
 					/>
 					<button className="bg-black text-white mb-2 font-semibold rounded px-4 py-2 w-full">
-						Submit
+						Login as captain
 					</button>
 				</form>
 				<p className="text-center">

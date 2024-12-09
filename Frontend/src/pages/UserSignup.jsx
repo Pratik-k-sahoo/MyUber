@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login } from "../slice/userSlice";
 
 const UserSignup = () => {
+	const navigate = useNavigate();
+  const dispatch = useDispatch();
 	const [userData, setUserData] = useState({
 		email: "",
 		fullname: {
@@ -11,17 +16,30 @@ const UserSignup = () => {
 		password: "",
 	});
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-    console.log(userData);
-    setUserData({
-			email: "",
-			fullname: {
-				firstName: "",
-				lastName: "",
-			},
-			password: "",
-		});
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, userData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if(response.status === 201) {
+        dispatch(login(response.data.user));
+        setUserData({
+					email: "",
+					fullname: {
+						firstName: "",
+						lastName: "",
+					},
+					password: "",
+				});
+        navigate("/home")
+      }
+    } catch (error) {
+      console.error(error);
+    }		
 	};
 
 	return (
@@ -95,7 +113,7 @@ const UserSignup = () => {
 						className="bg-[#eeeeee] mb-5 rounded px-4 py-2 border w-full text-sm placeholder:text-base"
 					/>
 					<button className="bg-black text-white mb-2 font-semibold rounded px-4 py-2 w-full">
-						Submit
+						Create account
 					</button>
 				</form>
 				<p className="text-center">

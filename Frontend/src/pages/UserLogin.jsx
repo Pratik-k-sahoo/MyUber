@@ -1,18 +1,42 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../slice/userSlice";
 
 const UserLogin = () => {
-  
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState({});
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const [userData, setUserData] = useState({
+		email: "",
+		password: "",
+	});
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setUserData({email, password})
-    setEmail("");
-    setPassword("");
-  }
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_BASE_URL}/users/login`,
+				userData,
+				{
+					withCredentials: true,
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (response.status === 200) {
+				dispatch(login(response.data.user));
+				setUserData({
+					email: "",
+					password: "",
+				});
+				navigate("/home");
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	return (
 		<div className="p-7 flex flex-col justify-between h-screen">
@@ -27,9 +51,14 @@ const UserLogin = () => {
 						What&apos;s your email address?
 					</h3>
 					<input
-            value={email}
-            name="email"
-            onChange={(e) => setEmail(e.target.value)}
+						value={userData.email}
+						name="email"
+						onChange={(e) =>
+							setUserData({
+								...userData,
+								email: e.target.value,
+							})
+						}
 						type="email"
 						required
 						placeholder="email@example.com"
@@ -37,9 +66,14 @@ const UserLogin = () => {
 					/>
 					<h3 className="text-lg font-medium mb-2">Enter Password</h3>
 					<input
-            value={password}
-            name="password"
-            onChange={(e) => setPassword(e.target.value)}
+						value={userData.password}
+						name="password"
+						onChange={(e) =>
+							setUserData({
+								...userData,
+								password: e.target.value,
+							})
+						}
 						type="password"
 						required
 						placeholder="Atleast 6 digits"
@@ -51,11 +85,16 @@ const UserLogin = () => {
 				</form>
 				<p className="text-center">
 					New here?{" "}
-					<Link to={"/signup"} className="mb-7 text-blue-500 font-semibold">Create New Account</Link>
+					<Link to={"/signup"} className="mb-7 text-blue-500 font-semibold">
+						Create New Account
+					</Link>
 				</p>
 			</div>
 			<div>
-				<Link to={"/captain-login"} className="bg-green-400 text-white mb-7 font-semibold rounded px-4 flex items-center justify-center py-2 w-full">
+				<Link
+					to={"/captain-login"}
+					className="bg-green-400 text-white mb-7 font-semibold rounded px-4 flex items-center justify-center py-2 w-full"
+				>
 					Sign in as Captain
 				</Link>
 			</div>

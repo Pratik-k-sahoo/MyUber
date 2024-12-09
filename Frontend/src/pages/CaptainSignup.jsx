@@ -1,7 +1,12 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../slice/captainSlice";
 
 const CaptainSignup = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [userData, setUserData] = useState({
 		email: "",
 		fullname: {
@@ -9,19 +14,48 @@ const CaptainSignup = () => {
 			lastName: "",
 		},
 		password: "",
+		vehicle: {
+			color: "",
+			plate: "",
+			capacity: 0,
+			vehicleType: "",
+		},
 	});
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log(userData);
-		setUserData({
-			email: "",
-			fullname: {
-				firstName: "",
-				lastName: "",
-			},
-			password: "",
-		});
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_BASE_URL}/captains/register`,
+				userData,
+				{
+					withCredentials: true,
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			if (response.status === 201) {
+				dispatch(login(response.data.captain));
+				setUserData({
+					email: "",
+					fullname: {
+						firstName: "",
+						lastName: "",
+					},
+					password: "",
+					vehicle: {
+						color: "",
+						plate: "",
+						capacity: 0,
+						vehicleType: "",
+					},
+				});
+				navigate("/captain/home");
+			}
+		} catch (error) {
+			console.log(error);
+		}    
 	};
 
 	return (
@@ -94,13 +128,98 @@ const CaptainSignup = () => {
 						placeholder="Atleast 6 digits"
 						className="bg-[#eeeeee] mb-5 rounded px-4 py-2 border w-full text-sm placeholder:text-base"
 					/>
+					<h3 className="text-lg font-medium mb-2">Vehicle Details</h3>
+					<div className="grid grid-cols-2 gap-4 mb-3">
+						<div className="flex flex-col gap-2 mb-3">
+							<h4 className="text-base ml-1 font-medium text-slate-800">
+								Vehicle Color
+							</h4>
+							<input
+								value={userData.vehicle.color}
+								name="color"
+								onChange={(e) =>
+									setUserData({
+										...userData,
+										vehicle: { ...userData.vehicle, color: e.target.value },
+									})
+								}
+								type="text"
+								placeholder="Vehicle Color"
+								className="bg-[#eeeeee] rounded px-4 py-2 border w-full text-sm placeholder:text-base"
+							/>
+						</div>
+						<div className="flex flex-col gap-2 mb-3">
+							<h4 className="text-base ml-1 font-medium text-slate-800">
+								Vehicle Capacity
+							</h4>
+							<input
+								value={userData.vehicle.capacity}
+								name="capacity"
+								onChange={(e) =>
+									setUserData({
+										...userData,
+										vehicle: { ...userData.vehicle, capacity: e.target.value },
+									})
+								}
+								type="number"
+								placeholder="Vehicle Capacity"
+								className="bg-[#eeeeee] rounded px-4 py-2 border w-full text-sm placeholder:text-base"
+							/>
+						</div>
+						<div className="flex flex-col gap-2 mb-3 col-span-2">
+							<h4 className="text-base ml-1 font-medium text-slate-800">
+								Vehicle Plate
+							</h4>
+							<input
+								value={userData.vehicle.plate}
+								name="plate"
+								onChange={(e) =>
+									setUserData({
+										...userData,
+										vehicle: { ...userData.vehicle, plate: e.target.value },
+									})
+								}
+								type="text"
+								placeholder="Vehicle Plate"
+								className="bg-[#eeeeee] rounded px-4 py-2 border w-full text-sm placeholder:text-base"
+							/>
+						</div>
+						<div className="flex flex-col gap-2 mb-3 col-span-2">
+							<h4 className="text-base ml-1 font-medium text-slate-800">
+								Vehicle Type
+							</h4>
+							<select
+              required
+								placeholder="Vehicle Type"
+								className="bg-[#eeeeee] rounded px-4 py-2 border w-full text-sm placeholder:text-base"
+                name="vehicleType"
+                value={userData.vehicle.vehicleType}
+                onChange={(e) =>
+                  setUserData({
+                    ...userData,
+                    vehicle: { ...userData.vehicle, vehicleType: e.target.value },
+                  })
+                }
+							>
+								<option value="" disabled>
+									Select Vehicle Type
+								</option>
+								<option value="car">Car</option>
+								<option value="motorcycle">Motorcycle</option>
+								<option value="auto">Auto</option>
+							</select>
+						</div>
+					</div>
 					<button className="bg-black text-white mb-2 font-semibold rounded px-4 py-2 w-full">
-						Submit
+						Create captain account
 					</button>
 				</form>
 				<p className="text-center">
 					Already have an account?{" "}
-					<Link to={"/captain-login"} className="mb-5 text-blue-500 font-semibold">
+					<Link
+						to={"/captain-login"}
+						className="mb-5 text-blue-500 font-semibold"
+					>
 						Login here
 					</Link>
 				</p>
