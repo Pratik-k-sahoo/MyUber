@@ -20,6 +20,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/users", userRouter);
-app.use("/api/captain", captainRouter);
+app.use("/api/captains", captainRouter);
 
 module.exports = app;

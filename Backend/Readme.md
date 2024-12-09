@@ -197,7 +197,7 @@ Logs out the authenticated user by invalidating their JWT token. This endpoint r
 
 ### Endpoint
 
-`POST /api/captain/register`
+`POST /api/captains/register`
 
 ### Description
 
@@ -279,7 +279,7 @@ Registers a new captain in the system.
 
 ### Endpoint
 
-`POST /api/captain/login`
+`POST /api/captains/login`
 
 ### Description
 
@@ -343,7 +343,7 @@ Authenticates a captain using their email and password, returning a JWT token up
 
 ### Endpoint
 
-`GET /api/captain/profile`
+`GET /api/captains/profile`
 
 ### Description
 
@@ -390,7 +390,7 @@ Retrieves the profile information of the authenticated captain. This endpoint re
 
 ### Endpoint
 
-`GET /api/captain/logout`
+`GET /api/captains/logout`
 
 ### Description
 
