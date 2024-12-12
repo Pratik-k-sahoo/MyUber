@@ -12,6 +12,7 @@ import {
 	CaptainHome,
 	CaptainProtectedWrapper,
 	CaptainLogout,
+  Riding,
 } from "./pages";
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
 					element={
 						<UserProtectedWrapper>
 							<UserLogout />
+						</UserProtectedWrapper>
+					}
+				/>
+				<Route
+					path="/riding"
+					element={
+						<UserProtectedWrapper>
+							<Riding />
 						</UserProtectedWrapper>
 					}
 				/>
