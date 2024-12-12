@@ -7,6 +7,7 @@ import store from "./redux/store.js";
 import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
+import "remixicon/fonts/remixicon.css";
 
 const persistor = persistStore(store);
 

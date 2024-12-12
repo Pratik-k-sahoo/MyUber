@@ -1,8 +1,15 @@
 import React, { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import "remixicon/fonts/remixicon.css";
-import { LocationSearchPanel } from "../components";
+import {
+	ConfirmedVehicle,
+	LocationSearchPanel,
+	TripForm,
+	UberLogoBlack,
+	VehiclePanel,
+  LookingForDriver,
+  WaitingForDriver,
+} from "../components";
 
 const Home = () => {
 	const [routes, setRoutes] = useState({
@@ -11,8 +18,17 @@ const Home = () => {
 	});
 
 	const [panelOpen, setPanelOpen] = useState(false);
+	const [vehiclePanel, setVehiclePanel] = useState(false);
+  const [confirmVehiclePanel, setConfirmVehiclePanel] = useState(false);
+  const [vehicleFound, setVehicleFound] = useState(false);
+  const [waitingForDriverPanel, setWaitingForDriverPanel] = useState(false);
+
 	const panelRef = useRef(null);
 	const panelIcon = useRef(null);
+	const vehiclePanelRef = useRef(null);
+  const confirmVehiclePanelRef = useRef(null);
+  const vehicleFoundRef = useRef(null);
+  const waitingForDriverRef = useRef(null);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -25,7 +41,7 @@ const Home = () => {
 			});
 			gsap.to(panelRef.current, {
 				height: "70%",
-        padding: 24
+				padding: 24,
 			});
 		} else {
 			gsap.to(panelIcon.current, {
@@ -38,13 +54,57 @@ const Home = () => {
 		}
 	}, [panelOpen]);
 
+	useGSAP(() => {
+		if (vehiclePanel) {
+			gsap.to(vehiclePanelRef.current, {
+				transform: "translateY(0)",
+			});
+		} else {
+			gsap.to(vehiclePanelRef.current, {
+				transform: "translateY(100%)",
+			});
+		}
+	}, [vehiclePanel]);
+
+	useGSAP(() => {
+		if (confirmVehiclePanel) {
+			gsap.to(confirmVehiclePanelRef.current, {
+				transform: "translateY(0)",
+			});
+		} else {
+			gsap.to(confirmVehiclePanelRef.current, {
+				transform: "translateY(100%)",
+			});
+		}
+	}, [confirmVehiclePanel]);
+
+	useGSAP(() => {
+		if (vehicleFound) {
+			gsap.to(vehicleFoundRef.current, {
+				transform: "translateY(0)",
+			});
+		} else {
+			gsap.to(vehicleFoundRef.current, {
+				transform: "translateY(100%)",
+			});
+		}
+	}, [vehicleFound]);
+
+	useGSAP(() => {
+		if (waitingForDriverPanel) {
+			gsap.to(waitingForDriverRef.current, {
+				transform: "translateY(0)",
+			});
+		} else {
+			gsap.to(waitingForDriverRef.current, {
+				transform: "translateY(100%)",
+			});
+		}
+	}, [waitingForDriverPanel]);
+
 	return (
-		<div className="h-screen relative">
-			<img
-				src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-				alt=""
-				className="w-16 absolute left-5 top-5"
-			/>
+		<div className="h-screen relative overflow-hidden">
+			<UberLogoBlack />
 			<div className="h-screen w-screen">
 				{/* TODO: Temporary image */}
 				<img
@@ -54,42 +114,52 @@ const Home = () => {
 				/>
 			</div>
 			<div className="flex flex-col justify-end h-screen absolute top-0 w-full">
-				<div className="h-[30%] p-5 bg-white relative rounded-t-xl">
-					<h5
-						ref={panelIcon}
-						onClick={() => setPanelOpen(false)}
-						className="absolute top-1 left-3 text-2xl opacity-0"
-					>
-						<i className="ri-arrow-down-wide-line"></i>
-					</h5>
-					<h4 className="text-2xl font-semibold mt-3">Find a trip</h4>
-					<form onSubmit={handleSubmit}>
-						<div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-800 rounded-full"></div>
-						<input
-							onClick={() => setPanelOpen(true)}
-							className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mt-5"
-							type="text"
-							placeholder="Add a pick-up location"
-							value={routes.pickUp}
-							onChange={(e) => setRoutes({ ...routes, pickUp: e.target.value })}
-							name="pickUp"
-						/>
-						<input
-							onClick={() => setPanelOpen(true)}
-							className="bg-[#eee] px-12 py-2 text-base rounded-lg w-full mt-3"
-							type="text"
-							placeholder="Enter your destination"
-							value={routes.destination}
-							onChange={(e) =>
-								setRoutes({ ...routes, destination: e.target.value })
-							}
-							name="destination"
-						/>
-					</form>
-				</div>
+				<TripForm
+					handleSubmit={handleSubmit}
+					setPanelOpen={setPanelOpen}
+					routes={routes}
+					setRoutes={setRoutes}
+					panelIcon={panelIcon}
+				/>
 				<div ref={panelRef} className="bg-white h-0">
-          <LocationSearchPanel />
-        </div>
+					<LocationSearchPanel
+						setVehiclePanel={setVehiclePanel}
+						setPanelOpen={setPanelOpen}
+						setRoutes={setRoutes}
+					/>
+				</div>
+			</div>
+			<div
+				ref={vehiclePanelRef}
+				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-10 pt-12"
+			>
+				<VehiclePanel
+					setConfirmVehiclePanel={setConfirmVehiclePanel}
+					setVehiclePanel={setVehiclePanel}
+				/>
+			</div>
+			<div
+				ref={confirmVehiclePanelRef}
+				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-6 pt-12"
+			>
+				<ConfirmedVehicle
+					setVehicleFound={setVehicleFound}
+					setConfirmVehiclePanel={setConfirmVehiclePanel}
+				/>
+			</div>
+
+			<div
+				ref={vehicleFoundRef}
+				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-6 pt-12"
+			>
+				<LookingForDriver
+					setWaitingForDriverPanel={setWaitingForDriverPanel}
+					setVehicleFound={setVehicleFound}
+				/>
+			</div>
+
+			<div ref={waitingForDriverRef} className="fixed z-10 bottom-0  bg-white w-full px-3 py-6 pt-12">
+				<WaitingForDriver setWaitingForDriverPanel={setWaitingForDriverPanel} />
 			</div>
 		</div>
 	);
