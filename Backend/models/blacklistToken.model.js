@@ -1,18 +1,21 @@
 const { Schema, model } = require("mongoose");
 
 
-const BlacklistSchema = new Schema({
-	token: {
-		type: String,
-		required: true,
-		unique: true,
+const BlacklistSchema = new Schema(
+	{
+		token: {
+			type: String,
+			required: true,
+			unique: true,
+		},
+		blacklistedAt: {
+			type: Date,
+			default: Date.now,
+			expires: 86400,
+		},
 	},
-	blacklistedAt: {
-		type: Date,
-		default: Date.now,
-		expires: 86400,
-	},
-});
+	{ timestamps: true }
+);
 
 const Blacklist = model("Blacklist", BlacklistSchema);
 
