@@ -28,5 +28,5 @@ router.get(
 	query("input").isString().isLength({ min: 3 }),
 	authUser,
 	getAutoCompleteSuggestions
-),
-	(module.exports = router);
+);
+module.exports = router;
