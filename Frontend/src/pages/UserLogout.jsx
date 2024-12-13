@@ -22,6 +22,8 @@ const UserLogout = () => {
 					navigate("/login");
 				}
 			} catch (error) {
+        dispatch(logout());
+				navigate("/login");
 				console.log(error);
 			}
 		};
