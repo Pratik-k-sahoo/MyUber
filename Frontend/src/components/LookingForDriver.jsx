@@ -3,16 +3,13 @@ import { FaLocationDot, FaSquare } from "react-icons/fa6";
 import { IoIosCash } from "react-icons/io";
 import Loader from "./Loader";
 
-const LookingForDriver = ({ setVehicleFound, setWaitingForDriverPanel }) => {
-	useEffect(() => {
-		const timer = setTimeout(() => {
-      setVehicleFound(false);
-			setWaitingForDriverPanel(true);
-		}, 5000);
-
-		return () => clearTimeout(timer);
-	});
-
+const LookingForDriver = ({
+	setVehicleFound,
+	setWaitingForDriverPanel,
+	vehicleType,
+	routes,
+	fare,
+}) => {
 	return (
 		<div>
 			<h5
@@ -31,25 +28,29 @@ const LookingForDriver = ({ setVehicleFound, setWaitingForDriverPanel }) => {
 					<div className="flex gap-5 w-full justify-center items-center p-3 border-b-2">
 						<FaLocationDot />
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">562/11-A</h3>
+							<h3 className="text-xl font-bold">
+								{routes.pickUp?.structured_formatting?.main_text}
+							</h3>
 							<p className="text-sm text-gray-600 -mt-1">
-								Kankariya Talab, Ahmedabad
+								{routes.pickUp?.structured_formatting?.secondary_text}
 							</p>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3 border-b-2">
 						<FaSquare />
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">562/11-A</h3>
+							<h3 className="text-xl font-bold">
+								{routes.pickUp?.structured_formatting?.main_text}
+							</h3>
 							<p className="text-sm text-gray-600 -mt-1">
-								Kankariya Talab, Ahmedabad
+								{routes.pickUp?.structured_formatting?.secondary_text}
 							</p>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3">
 						<IoIosCash />
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">₹193.64</h3>
+							<h3 className="text-xl font-bold">₹{fare[vehicleType]}</h3>
 							<p className="text-sm text-gray-600 -mt-1">Cash</p>
 						</div>
 					</div>

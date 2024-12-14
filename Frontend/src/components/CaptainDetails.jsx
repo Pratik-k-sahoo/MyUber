@@ -2,7 +2,7 @@ import React from "react";
 import { IoIosTimer, IoMdSpeedometer } from "react-icons/io";
 import { LuNotepadText } from "react-icons/lu";
 
-const CaptainDetails = () => {
+const CaptainDetails = ({ captain }) => {
 	return (
 		<div>
 			<div className="flex items-center justify-between">
@@ -12,7 +12,7 @@ const CaptainDetails = () => {
 						alt=""
 						className="w-14 rounded-full object-cover"
 					/>
-					<h4 className="text-xl font-medium">Pratik Sahoo</h4>
+					<h4 className="text-xl font-medium capitalize">{`${captain?.fullname?.firstName} ${captain?.fullname?.lastName}`}</h4>
 				</div>
 				<div>
 					<h4 className="text-xl font-semibold">₹295.20</h4>

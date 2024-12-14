@@ -1,7 +1,12 @@
 import React from "react";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 
-const VehiclePanel = ({ setVehiclePanel, setConfirmVehiclePanel }) => {
+const VehiclePanel = ({
+	setVehiclePanel,
+	setConfirmVehiclePanel,
+	fare,
+	handleSelectVehicleType,
+}) => {
 	return (
 		<div>
 			<h5
@@ -14,10 +19,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmVehiclePanel }) => {
 				Choose your preferred vehicle
 			</h4>
 			<div
-				onClick={() => {
-					setConfirmVehiclePanel(true);
-					setVehiclePanel(false);
-				}}
+				onClick={() => handleSelectVehicleType("car")}
 				className="flex w-full border-4 justify-center active:border-black items-center p-2 rounded-xl mb-2"
 			>
 				<img className="w-16 h-10 ml-1 mr-3" src="/UberGo.png" alt="" />
@@ -37,14 +39,11 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmVehiclePanel }) => {
 				</div>
 				<h1 className="flex items-center font-medium text-xl">
 					<FaIndianRupeeSign />
-					193.20
+					{Math.floor(fare.car)}
 				</h1>
 			</div>
 			<div
-				onClick={() => {
-					setConfirmVehiclePanel(true);
-					setVehiclePanel(false);
-				}}
+				onClick={() => handleSelectVehicleType("motorcycle")}
 				className="flex w-full border-4 justify-center active:border-black items-center p-2 rounded-xl mb-2"
 			>
 				<img className="w-[7rem] h-16" src="/Moto.png" alt="" />
@@ -66,14 +65,11 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmVehiclePanel }) => {
 				</div>
 				<h1 className="flex items-center font-medium text-xl">
 					<FaIndianRupeeSign />
-					65
+					{Math.floor(fare.motorcycle)}
 				</h1>
 			</div>
 			<div
-				onClick={() => {
-					setConfirmVehiclePanel(true);
-					setVehiclePanel(false);
-				}}
+				onClick={() => handleSelectVehicleType("auto")}
 				className="flex w-full border-4 justify-center active:border-black items-center p-2 rounded-xl mb-2"
 			>
 				<img className="w-32 h-14" src="/Auto.png" alt="" />
@@ -93,7 +89,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmVehiclePanel }) => {
 				</div>
 				<h1 className="flex items-center font-medium text-xl">
 					<FaIndianRupeeSign />
-					185.86
+					{Math.floor(fare.auto)}
 				</h1>
 			</div>
 		</div>

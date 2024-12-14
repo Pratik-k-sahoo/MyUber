@@ -9,6 +9,7 @@ import {
 } from "../components";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { useSelector } from "react-redux";
 
 const CaptainHome = () => {
 	const [captainRidePopupPanel, setCaptainRidePopupPanel] = useState(false);
@@ -16,6 +17,7 @@ const CaptainHome = () => {
 		useState(false);
 	const captainRidePopupPanelRef = useRef(null);
 	const captainConfirmRidePopupPanelRef = useRef(null);
+  const {captain} = useSelector(state => state.captain);
 
 	useGSAP(() => {
 		if (captainRidePopupPanel) {
@@ -60,7 +62,7 @@ const CaptainHome = () => {
 				/>
 			</div>
 			<div className="h-2/5 p-7">
-				<CaptainDetails />
+				<CaptainDetails captain={captain} />
 			</div>
 			<div
 				ref={captainRidePopupPanelRef}

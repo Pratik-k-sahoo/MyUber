@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const location = [
 	{
@@ -28,23 +28,40 @@ const location = [
 	},
 ];
 
-const LocationSearchPanel = ({ setPanelOpen, setVehiclePanel, setRoutes }) => {
+const LocationSearchPanel = ({
+	setPanelOpen,
+	setVehiclePanel,
+	setRoutes,
+	suggestions,
+	activeField,
+	routes,
+	handleProceed,
+}) => {
+	const handleSuggestionClick = (suggestion) => {
+		if (activeField === "pickup") {
+			setRoutes({ ...routes, pickUp: suggestion });
+			suggestions = [];
+		} else setRoutes({ ...routes, destination: suggestion });
+	};
+
 	return (
 		<div>
-			{location.map((loc) => (
+			<button
+				onClick={handleProceed}
+				className="w-full bg-green-600 text-white rounded-lg p-2 font-semibold"
+			>
+				Proceed
+			</button>
+			{suggestions.map((loc, idx) => (
 				<div
-					onClick={() => {
-						setVehiclePanel(true);
-						setRoutes({ ...setRoutes, destination: loc.address });
-						setPanelOpen(false);
-					}}
-					key={loc.id}
+					onClick={() => handleSuggestionClick(loc)}
+					key={idx}
 					className="flex items-center justify-start gap-4 my-1 border-white active:border-black border-2 py-1 px-2 rounded-xl"
 				>
-					<h2 className="bg-[#eee] rounded-full p-2 h-10 w-14 flex items-center justify-center">
+					<h2 className="bg-[#eee] rounded-full p-2 max-h-10 max-w-14 flex items-center justify-center">
 						<i className="ri-map-pin-fill"></i>
 					</h2>
-					<h4 className="font-medium">{loc.address}</h4>
+					<h4 className="font-medium">{loc.description}</h4>
 				</div>
 			))}
 		</div>

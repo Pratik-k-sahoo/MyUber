@@ -7,31 +7,137 @@ import {
 	TripForm,
 	UberLogoBlack,
 	VehiclePanel,
-  LookingForDriver,
-  WaitingForDriver,
+	LookingForDriver,
+	WaitingForDriver,
 } from "../components";
+import axios from "axios";
 
 const Home = () => {
 	const [routes, setRoutes] = useState({
-		pickUp: "",
-		destination: "",
+		pickUp: {},
+		destination: {},
 	});
 
 	const [panelOpen, setPanelOpen] = useState(false);
 	const [vehiclePanel, setVehiclePanel] = useState(false);
-  const [confirmVehiclePanel, setConfirmVehiclePanel] = useState(false);
-  const [vehicleFound, setVehicleFound] = useState(false);
-  const [waitingForDriverPanel, setWaitingForDriverPanel] = useState(false);
+	const [confirmVehiclePanel, setConfirmVehiclePanel] = useState(false);
+	const [vehicleFound, setVehicleFound] = useState(false);
+	const [waitingForDriverPanel, setWaitingForDriverPanel] = useState(false);
+	const [pickupSuggestions, setPickupSuggestions] = useState([]);
+	const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+	const [activeField, setActiveField] = useState(null);
+	const [fare, setFare] = useState([]);
+	const [vehicleType, setVehicleType] = useState(null);
 
 	const panelRef = useRef(null);
 	const panelIcon = useRef(null);
 	const vehiclePanelRef = useRef(null);
-  const confirmVehiclePanelRef = useRef(null);
-  const vehicleFoundRef = useRef(null);
-  const waitingForDriverRef = useRef(null);
+	const confirmVehiclePanelRef = useRef(null);
+	const vehicleFoundRef = useRef(null);
+	const waitingForDriverRef = useRef(null);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+	};
+
+	const handlePickupChange = async (e) => {
+		setRoutes({ ...routes, pickUp: e.target.value });
+		if (e.target.value.length > 2) {
+			try {
+				const suggestions = await axios.get(
+					`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions?input=${
+						e.target.value
+					}`,
+					{
+						withCredentials: true,
+					}
+				);
+				console.log(suggestions.data);
+				setPickupSuggestions(suggestions.data);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
+	const handleDestinationChange = async (e) => {
+		setRoutes({ ...routes, destination: e.target.value });
+		if (e.target.value.length > 2) {
+			try {
+				const suggestions = await axios.get(
+					`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions?input=${
+						e.target.value
+					}`,
+					{
+						withCredentials: true,
+					}
+				);
+				console.log(suggestions.data);
+				setDestinationSuggestions(suggestions.data);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
+	const handleProceed = async () => {
+		// setPanelOpen(false);
+		// 	setVehiclePanel(true);
+		if (routes.pickUp.description.length > 0 && routes.destination.description.length) {
+			try {
+				const myFare = await axios.post(
+					`${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+					{
+						pickup: routes.pickUp.description,
+						destination: routes.destination.description,
+					},
+					{
+						withCredentials: true,
+					}
+				);
+				console.log(myFare);
+				if (myFare.status === 201) {
+					setFare(myFare.data);
+					setPanelOpen(false);
+					setVehiclePanel(true);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
+	const handleCreateRide = async () => {
+		if (vehicleType.length > 0) {
+			try {
+				const response = await axios.post(
+					`${import.meta.env.VITE_BASE_URL}/rides/create`,
+					{
+						pickup: routes.pickUp.description,
+						destination: routes.destination.description,
+						vehicleType,
+					},
+					{
+						withCredentials: true,
+					}
+				);
+				if (response.status === 201) {
+					console.log(response.data);
+          setVehicleFound(true);
+          setConfirmVehiclePanel(false)
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
+	const handleSelectVehicleType = (vehicle) => {
+		if (vehicle.length > 0) {
+			setVehicleType(vehicle);
+			setConfirmVehiclePanel(true);
+			setVehiclePanel(false);
+		}
 	};
 
 	useGSAP(() => {
@@ -58,10 +164,12 @@ const Home = () => {
 		if (vehiclePanel) {
 			gsap.to(vehiclePanelRef.current, {
 				transform: "translateY(0)",
+        zIndex: 10
 			});
 		} else {
 			gsap.to(vehiclePanelRef.current, {
 				transform: "translateY(100%)",
+				zIndex: -10,
 			});
 		}
 	}, [vehiclePanel]);
@@ -70,10 +178,12 @@ const Home = () => {
 		if (confirmVehiclePanel) {
 			gsap.to(confirmVehiclePanelRef.current, {
 				transform: "translateY(0)",
+        zIndex: 10
 			});
 		} else {
 			gsap.to(confirmVehiclePanelRef.current, {
 				transform: "translateY(100%)",
+        zIndex:-10
 			});
 		}
 	}, [confirmVehiclePanel]);
@@ -82,10 +192,12 @@ const Home = () => {
 		if (vehicleFound) {
 			gsap.to(vehicleFoundRef.current, {
 				transform: "translateY(0)",
+        zIndex: 10
 			});
 		} else {
 			gsap.to(vehicleFoundRef.current, {
 				transform: "translateY(100%)",
+        zIndex: -10
 			});
 		}
 	}, [vehicleFound]);
@@ -94,10 +206,12 @@ const Home = () => {
 		if (waitingForDriverPanel) {
 			gsap.to(waitingForDriverRef.current, {
 				transform: "translateY(0)",
+        zIndex: 10
 			});
 		} else {
 			gsap.to(waitingForDriverRef.current, {
 				transform: "translateY(100%)",
+        zIndex: -10
 			});
 		}
 	}, [waitingForDriverPanel]);
@@ -120,29 +234,46 @@ const Home = () => {
 					routes={routes}
 					setRoutes={setRoutes}
 					panelIcon={panelIcon}
+					handlePickupChange={handlePickupChange}
+					handleDestinationChange={handleDestinationChange}
+					setActiveField={setActiveField}
 				/>
 				<div ref={panelRef} className="bg-white h-0">
 					<LocationSearchPanel
 						setVehiclePanel={setVehiclePanel}
 						setPanelOpen={setPanelOpen}
 						setRoutes={setRoutes}
+						routes={routes}
+						activeField={activeField}
+						suggestions={
+							activeField === "pickup"
+								? pickupSuggestions
+								: destinationSuggestions
+						}
+						handleProceed={handleProceed}
 					/>
 				</div>
 			</div>
 			<div
 				ref={vehiclePanelRef}
-				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-10 pt-12"
+				className="fixed -z-10 bottom-0 translate-y-full bg-white w-full px-3 py-10 pt-12"
 			>
 				<VehiclePanel
+					handleSelectVehicleType={handleSelectVehicleType}
+					fare={fare}
 					setConfirmVehiclePanel={setConfirmVehiclePanel}
 					setVehiclePanel={setVehiclePanel}
 				/>
 			</div>
 			<div
 				ref={confirmVehiclePanelRef}
-				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-6 pt-12"
+				className="fixed -z-10 bottom-0 translate-y-full bg-white w-full px-3 py-6 pt-12"
 			>
 				<ConfirmedVehicle
+					vehicleType={vehicleType}
+					routes={routes}
+					fare={fare}
+					handleCreateRide={handleCreateRide}
 					setVehicleFound={setVehicleFound}
 					setConfirmVehiclePanel={setConfirmVehiclePanel}
 				/>
@@ -150,15 +281,21 @@ const Home = () => {
 
 			<div
 				ref={vehicleFoundRef}
-				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-6 pt-12"
+				className="fixed -z-10 bottom-0 translate-y-full bg-white w-full px-3 py-6 pt-12"
 			>
 				<LookingForDriver
+					vehicleType={vehicleType}
+					routes={routes}
+					fare={fare}
 					setWaitingForDriverPanel={setWaitingForDriverPanel}
 					setVehicleFound={setVehicleFound}
 				/>
 			</div>
 
-			<div ref={waitingForDriverRef} className="fixed z-10 bottom-0  bg-white w-full px-3 py-6 pt-12">
+			<div
+				ref={waitingForDriverRef}
+				className="fixed -z-10 bottom-0  bg-white w-full px-3 py-6 pt-12"
+			>
 				<WaitingForDriver setWaitingForDriverPanel={setWaitingForDriverPanel} />
 			</div>
 		</div>
