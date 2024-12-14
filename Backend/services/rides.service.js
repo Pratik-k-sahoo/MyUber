@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 function getOTP() {
 	const otp = crypto.randomInt(Math.pow(10, 3), Math.pow(10, 4)).toString();
-  return otp;
+	return otp;
 }
 
 async function getFare(pickup, destination) {
@@ -65,8 +65,10 @@ module.exports.createRide = async (
 		user: userId,
 		pickup,
 		destination,
-    otp: getOTP(),
+		otp: getOTP(),
 		fare: fare[vehicleType],
 	});
 	return ride;
 };
+
+module.exports.getFare = getFare;
