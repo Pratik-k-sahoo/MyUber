@@ -28,7 +28,7 @@ const rideSchema = new Schema(
 		},
 		captain: {
 			type: Schema.Types.ObjectId,
-			ref: "User",
+			ref: "Captain",
 		},
 		fare: {
 			type: Number,
