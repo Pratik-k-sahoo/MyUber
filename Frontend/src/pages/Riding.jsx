@@ -4,6 +4,7 @@ import { IoIosCash } from "react-icons/io";
 import { IoHome } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTracking";
 
 const Riding = () => {
 	const location = useLocation();
@@ -31,11 +32,7 @@ const Riding = () => {
 				<IoHome className="text-lg font-semibold" />
 			</Link>
 			<div className="h-1/2">
-				<img
-					className="h-full w-full object-cover"
-					src="https://media.licdn.com/dms/image/v2/C5112AQEocbHNC2ZmIA/article-inline_image-shrink_1000_1488/article-inline_image-shrink_1000_1488/0/1534422634779?e=1737590400&v=beta&t=6kZZ1uETNP8yMq9RQWsftmzWWs17RxJiaip2G0EvCBg"
-					alt=""
-				/>
+				<LiveTracking />
 			</div>
 			<div className="h-1/2 p-4">
 				<div className="flex items-center justify-between mb-3">

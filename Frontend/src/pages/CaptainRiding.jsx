@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FinishRide, UberLogoCaptain } from "../components";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainRiding = () => {
   const location = useLocation();
@@ -25,22 +26,16 @@ const CaptainRiding = () => {
 
 	return (
 		<div className="h-screen relative">
-			<div className="fixed p-7 flex justify-between items-center w-screen">
+			<div className="fixed p-7 flex justify-end border border-red-600 items-center w-screen z-50">
 				<UberLogoCaptain />
 				<Link
 					to={"/captain/home"}
-					className="h-10 w-10 bg-white rounded-full drop-shadow-lg flex items-center justify-center"
+					className="h-10 w-10 border border-green-600 bg-white rounded-full drop-shadow-lg flex items-center justify-center relative z-50"
 				>
 					<FaHome className="text-xl font-semibold" />
 				</Link>
 			</div>
-			<div className="h-4/5">
-				<img
-					className="h-full w-full object-cover"
-					src="https://media.licdn.com/dms/image/v2/C5112AQEocbHNC2ZmIA/article-inline_image-shrink_1000_1488/article-inline_image-shrink_1000_1488/0/1534422634779?e=1737590400&v=beta&t=6kZZ1uETNP8yMq9RQWsftmzWWs17RxJiaip2G0EvCBg"
-					alt=""
-				/>
-			</div>
+			<div className="h-4/5"><LiveTracking /></div>
 			<div
 				onClick={() => setFinishRidePanel(true)}
 				className="h-1/5 p-7 flex items-center justify-between bg-yellow-400 relative rounded-t-2xl"

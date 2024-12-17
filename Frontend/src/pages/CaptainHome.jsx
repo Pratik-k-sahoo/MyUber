@@ -11,6 +11,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import LiveTracking from "../components/LiveTracking";
 
 const CaptainHome = () => {
 	const [captainRidePopupPanel, setCaptainRidePopupPanel] = useState(false);
@@ -82,9 +83,9 @@ const CaptainHome = () => {
 			const response = await axios.post(
 				`${import.meta.env.VITE_BASE_URL}/rides/confirm`,
 				{
-          rideId: ride._id,
-          userId: captain._id
-        },
+					rideId: ride._id,
+					userId: captain._id,
+				},
 				{
 					withCredentials: true,
 				}
@@ -97,21 +98,17 @@ const CaptainHome = () => {
 
 	return (
 		<div className="h-screen relative">
-			<div className="fixed p-7 flex justify-between items-center w-screen">
-				<UberLogoCaptain />
+			<UberLogoCaptain />
+			<div className="fixed p-7 flex justify-end items-center w-screen z-50">
 				<Link
 					to={"/captain/logout"}
-					className="h-10 w-10 bg-white rounded-full drop-shadow-lg flex items-center justify-center"
+					className="h-10 w-10 bg-white rounded-full drop-shadow-lg flex items-center justify-center relative z-50"
 				>
 					<LuLogOut className="text-lg font-semibold" />
 				</Link>
 			</div>
 			<div className="h-3/5">
-				<img
-					className="h-full w-full object-cover"
-					src="https://media.licdn.com/dms/image/v2/C5112AQEocbHNC2ZmIA/article-inline_image-shrink_1000_1488/article-inline_image-shrink_1000_1488/0/1534422634779?e=1737590400&v=beta&t=6kZZ1uETNP8yMq9RQWsftmzWWs17RxJiaip2G0EvCBg"
-					alt=""
-				/>
+				<LiveTracking />
 			</div>
 			<div className="h-2/5 p-7">
 				<CaptainDetails captain={captain} />
@@ -132,7 +129,7 @@ const CaptainHome = () => {
 				className="fixed z-10 bottom-0 translate-y-full h-screen bg-white w-full px-3 py-10 pt-12"
 			>
 				<CaptainConfirmRidePopup
-          ride={ride}
+					ride={ride}
 					setCaptainConfirmRidePopupPanel={setCaptainConfirmRidePopupPanel}
 				/>
 			</div>

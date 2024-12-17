@@ -12,7 +12,7 @@ const socketSlice = createSlice({
 	reducers: {
 		connect: (state) => {
 			if (!state.socket) {
-				state.socket = io("http://localhost:3000"); // Replace with your server URL
+				state.socket = io("https://4rjqjz47-3000.inc1.devtunnels.ms/"); // Replace with your server URL
 				state.connected = true;
 				console.log("Connected to socket");
 			}

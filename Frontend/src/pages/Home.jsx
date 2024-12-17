@@ -12,7 +12,9 @@ import {
 } from "../components";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTracking";
+import { LuLogOut } from "react-icons/lu";
 
 const Home = () => {
 	const [routes, setRoutes] = useState({
@@ -31,8 +33,9 @@ const Home = () => {
 	const [fare, setFare] = useState([]);
 	const [vehicleType, setVehicleType] = useState(null);
 	const [ride, setRide] = useState(null);
-  const [otp, setOtp] = useState(null);
+	const [otp, setOtp] = useState(null);
 
+	const parentRef = useRef(null);
 	const panelRef = useRef(null);
 	const panelIcon = useRef(null);
 	const vehiclePanelRef = useRef(null);
@@ -43,7 +46,7 @@ const Home = () => {
 	const { user } = useSelector((state) => state.user);
 	const { socket } = useSelector((state) => state.socket);
 
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (socket) {
@@ -55,11 +58,11 @@ const Home = () => {
 				setWaitingForDriverPanel(true);
 			});
 
-      socket.on("ride-started", (data) => {
-        setWaitingForDriverPanel(false);
-        console.log(data);        
-        navigate("/riding", {state: {ride: data}});
-      });
+			socket.on("ride-started", (data) => {
+				setWaitingForDriverPanel(false);
+				console.log(data);
+				navigate("/riding", { state: { ride: data } });
+			});
 		}
 	}, [user, socket, navigate]);
 
@@ -153,7 +156,7 @@ const Home = () => {
 				);
 				if (response.status === 201) {
 					console.log(response.data);
-          setOtp(response.data.otp)
+					setOtp(response.data.otp);
 					setVehicleFound(true);
 					setConfirmVehiclePanel(false);
 				}
@@ -180,6 +183,9 @@ const Home = () => {
 				height: "70%",
 				padding: 24,
 			});
+			gsap.to(parentRef.current, {
+				zIndex: 0,
+			});
 		} else {
 			gsap.to(panelIcon.current, {
 				opacity: 0,
@@ -188,6 +194,9 @@ const Home = () => {
 				height: "0%",
 				padding: 0,
 			});
+      gsap.to(parentRef.current, {
+        zIndex: 20,
+      })
 		}
 	}, [panelOpen]);
 
@@ -197,6 +206,10 @@ const Home = () => {
 				transform: "translateY(0)",
 				zIndex: 10,
 			});
+			gsap.to(parentRef.current, {
+				zIndex: 0,
+			});
+
 		} else {
 			gsap.to(vehiclePanelRef.current, {
 				transform: "translateY(100%)",
@@ -210,6 +223,9 @@ const Home = () => {
 			gsap.to(confirmVehiclePanelRef.current, {
 				transform: "translateY(0)",
 				zIndex: 10,
+			});
+			gsap.to(parentRef.current, {
+				zIndex: 0,
 			});
 		} else {
 			gsap.to(confirmVehiclePanelRef.current, {
@@ -225,6 +241,9 @@ const Home = () => {
 				transform: "translateY(0)",
 				zIndex: 10,
 			});
+			gsap.to(parentRef.current, {
+				zIndex: 0,
+			});
 		} else {
 			gsap.to(vehicleFoundRef.current, {
 				transform: "translateY(100%)",
@@ -239,6 +258,9 @@ const Home = () => {
 				transform: "translateY(0)",
 				zIndex: 10,
 			});
+			gsap.to(parentRef.current, {
+				zIndex: 0,
+			});
 		} else {
 			gsap.to(waitingForDriverRef.current, {
 				transform: "translateY(100%)",
@@ -250,15 +272,18 @@ const Home = () => {
 	return (
 		<div className="h-screen relative overflow-hidden">
 			<UberLogoBlack />
-			<div className="h-screen w-screen">
-				{/* TODO: Temporary image */}
-				<img
-					className="h-full w-full object-cover"
-					src="https://media.licdn.com/dms/image/v2/C5112AQEocbHNC2ZmIA/article-inline_image-shrink_1000_1488/article-inline_image-shrink_1000_1488/0/1534422634779?e=1737590400&v=beta&t=6kZZ1uETNP8yMq9RQWsftmzWWs17RxJiaip2G0EvCBg"
-					alt=""
-				/>
+			<div className="fixed p-3 flex justify-end items-center w-screen z-50">
+				<Link
+					to={"/user/logout"}
+					className="h-10 w-10 bg-white rounded-full drop-shadow-lg flex items-center justify-center relative z-50"
+				>
+					<LuLogOut className="text-lg font-semibold" />
+				</Link>
 			</div>
-			<div className="flex flex-col justify-end h-screen absolute top-0 w-full">
+			<div ref={parentRef} className="h-[70%] w-screen relative">
+				<LiveTracking />
+			</div>
+			<div className="flex flex-col justify-end h-full absolute top-0 w-full z-10">
 				<TripForm
 					handleSubmit={handleSubmit}
 					setPanelOpen={setPanelOpen}
@@ -329,7 +354,7 @@ const Home = () => {
 			>
 				<WaitingForDriver
 					ride={ride}
-          otp={otp}
+					otp={otp}
 					setWaitingForDriverPanel={setWaitingForDriverPanel}
 				/>
 			</div>

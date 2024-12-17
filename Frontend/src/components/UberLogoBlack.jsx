@@ -5,7 +5,7 @@ const UberLogoBlack = () => {
 		<img
 			src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
 			alt=""
-			className="w-16 absolute left-5 top-5"
+			className="w-16 z-50 absolute left-5 top-5"
 		/>
 	);
 }
