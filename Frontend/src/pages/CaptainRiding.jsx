@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react";
 import { FaHome } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FinishRide, UberLogoCaptain } from "../components";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const CaptainRiding = () => {
+  const location = useLocation();
+	const rideData = location.state.ride;
 	const [finishRidePanel, setFinishRidePanel] = useState(false);
 	const finishRidePanelRef = useRef(null);
 
@@ -55,7 +57,7 @@ const CaptainRiding = () => {
 				ref={finishRidePanelRef}
 				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-10 pt-12"
 			>
-				<FinishRide setFinishRidePanel={setFinishRidePanel} />
+				<FinishRide ride={rideData} setFinishRidePanel={setFinishRidePanel} />
 			</div>
 		</div>
 	);

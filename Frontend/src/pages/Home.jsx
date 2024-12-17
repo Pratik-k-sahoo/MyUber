@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import {
@@ -11,6 +11,8 @@ import {
 	WaitingForDriver,
 } from "../components";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
 	const [routes, setRoutes] = useState({
@@ -28,6 +30,8 @@ const Home = () => {
 	const [activeField, setActiveField] = useState(null);
 	const [fare, setFare] = useState([]);
 	const [vehicleType, setVehicleType] = useState(null);
+	const [ride, setRide] = useState(null);
+  const [otp, setOtp] = useState(null);
 
 	const panelRef = useRef(null);
 	const panelIcon = useRef(null);
@@ -35,6 +39,29 @@ const Home = () => {
 	const confirmVehiclePanelRef = useRef(null);
 	const vehicleFoundRef = useRef(null);
 	const waitingForDriverRef = useRef(null);
+
+	const { user } = useSelector((state) => state.user);
+	const { socket } = useSelector((state) => state.socket);
+
+  const navigate = useNavigate();
+
+	useEffect(() => {
+		if (socket) {
+			socket.emit("join", { userType: "user", userId: user._id });
+
+			socket.on("ride-confirmed", (data) => {
+				setRide(data);
+				setVehicleFound(false);
+				setWaitingForDriverPanel(true);
+			});
+
+      socket.on("ride-started", (data) => {
+        setWaitingForDriverPanel(false);
+        console.log(data);        
+        navigate("/riding", {state: {ride: data}});
+      });
+		}
+	}, [user, socket, navigate]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -83,7 +110,10 @@ const Home = () => {
 	const handleProceed = async () => {
 		// setPanelOpen(false);
 		// 	setVehiclePanel(true);
-		if (routes.pickUp.description.length > 0 && routes.destination.description.length) {
+		if (
+			routes.pickUp.description.length > 0 &&
+			routes.destination.description.length
+		) {
 			try {
 				const myFare = await axios.post(
 					`${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
@@ -123,8 +153,9 @@ const Home = () => {
 				);
 				if (response.status === 201) {
 					console.log(response.data);
-          setVehicleFound(true);
-          setConfirmVehiclePanel(false)
+          setOtp(response.data.otp)
+					setVehicleFound(true);
+					setConfirmVehiclePanel(false);
 				}
 			} catch (error) {
 				console.error(error);
@@ -164,7 +195,7 @@ const Home = () => {
 		if (vehiclePanel) {
 			gsap.to(vehiclePanelRef.current, {
 				transform: "translateY(0)",
-        zIndex: 10
+				zIndex: 10,
 			});
 		} else {
 			gsap.to(vehiclePanelRef.current, {
@@ -178,12 +209,12 @@ const Home = () => {
 		if (confirmVehiclePanel) {
 			gsap.to(confirmVehiclePanelRef.current, {
 				transform: "translateY(0)",
-        zIndex: 10
+				zIndex: 10,
 			});
 		} else {
 			gsap.to(confirmVehiclePanelRef.current, {
 				transform: "translateY(100%)",
-        zIndex:-10
+				zIndex: -10,
 			});
 		}
 	}, [confirmVehiclePanel]);
@@ -192,12 +223,12 @@ const Home = () => {
 		if (vehicleFound) {
 			gsap.to(vehicleFoundRef.current, {
 				transform: "translateY(0)",
-        zIndex: 10
+				zIndex: 10,
 			});
 		} else {
 			gsap.to(vehicleFoundRef.current, {
 				transform: "translateY(100%)",
-        zIndex: -10
+				zIndex: -10,
 			});
 		}
 	}, [vehicleFound]);
@@ -206,12 +237,12 @@ const Home = () => {
 		if (waitingForDriverPanel) {
 			gsap.to(waitingForDriverRef.current, {
 				transform: "translateY(0)",
-        zIndex: 10
+				zIndex: 10,
 			});
 		} else {
 			gsap.to(waitingForDriverRef.current, {
 				transform: "translateY(100%)",
-        zIndex: -10
+				zIndex: -10,
 			});
 		}
 	}, [waitingForDriverPanel]);
@@ -296,7 +327,11 @@ const Home = () => {
 				ref={waitingForDriverRef}
 				className="fixed -z-10 bottom-0  bg-white w-full px-3 py-6 pt-12"
 			>
-				<WaitingForDriver setWaitingForDriverPanel={setWaitingForDriverPanel} />
+				<WaitingForDriver
+					ride={ride}
+          otp={otp}
+					setWaitingForDriverPanel={setWaitingForDriverPanel}
+				/>
 			</div>
 		</div>
 	);

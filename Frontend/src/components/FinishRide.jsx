@@ -1,7 +1,31 @@
+import axios from "axios";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const FinishRide = ({ setFinishRidePanel }) => {
+const FinishRide = ({ setFinishRidePanel, ride }) => {
+  const navigate = useNavigate();
+	const handleFinish = async () => {
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_BASE_URL}/rides/end-ride`,
+				{
+					rideId: ride._id,
+				},
+				{
+					withCredentials: true,
+				}
+			);
+
+			if (response.status === 200) {
+        console.log("Ride completed ", response.data);
+				setFinishRidePanel(false);
+				navigate("/captain/home");
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<div>
 			<h5
@@ -20,7 +44,11 @@ const FinishRide = ({ setFinishRidePanel }) => {
 						alt=""
 						className="h-14 w-14 rounded-full object-cover drop-shadow-md"
 					/>
-					<h2 className="text-lg font-medium">Pratik Sahoo</h2>
+					<h2 className="text-lg font-medium">
+						{ride?.user?.fullname?.firstName +
+							" " +
+							ride?.user?.fullname?.lastName}
+					</h2>
 				</div>
 				<h5 className="text-lg font-semibold">2.2 KM</h5>
 			</div>
@@ -28,36 +56,29 @@ const FinishRide = ({ setFinishRidePanel }) => {
 				<div className="w-full -mt-3">
 					<div className="flex gap-5 w-full justify-center items-center p-3 border-b-2">
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">562/11-A</h3>
-							<p className="text-sm text-gray-600 -mt-1">
-								Kankariya Talab, Ahmedabad
-							</p>
+							<h3 className="text-lg font-semibold">{ride?.pickup}</h3>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3 border-b-2">
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">562/11-A</h3>
-							<p className="text-sm text-gray-600 -mt-1">
-								Kankariya Talab, Ahmedabad
-							</p>
+							<h3 className="text-lg font-semibold">{ride?.destination}</h3>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3">
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">₹193.64</h3>
+							<h3 className="text-xl font-bold">₹{Math.round(ride?.fare)}</h3>
 							<p className="text-sm text-gray-600 -mt-1">Cash</p>
 						</div>
 					</div>
 				</div>
 
 				<div className="flex justify-between w-full gap-7 px-2">
-					<Link
-						to="/captain/home"
-						onClick={() => {}}
+					<button
+						onClick={handleFinish}
 						className="w-full mt-5 bg-green-600 text-white rounded-lg p-2 font-semibold text-center"
 					>
 						Complete ride
-					</Link>
+					</button>
 				</div>
 			</div>
 		</div>

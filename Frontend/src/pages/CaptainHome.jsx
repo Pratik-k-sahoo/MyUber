@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LuLogOut } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import {
@@ -10,14 +10,17 @@ import {
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const CaptainHome = () => {
 	const [captainRidePopupPanel, setCaptainRidePopupPanel] = useState(false);
 	const [captainConfirmRidePopupPanel, setCaptainConfirmRidePopupPanel] =
 		useState(false);
+	const [ride, setRide] = useState({});
 	const captainRidePopupPanelRef = useRef(null);
 	const captainConfirmRidePopupPanelRef = useRef(null);
-  const {captain} = useSelector(state => state.captain);
+	const { captain } = useSelector((state) => state.captain);
+	const { socket } = useSelector((state) => state.socket);
 
 	useGSAP(() => {
 		if (captainRidePopupPanel) {
@@ -42,6 +45,55 @@ const CaptainHome = () => {
 			});
 		}
 	}, [captainConfirmRidePopupPanel]);
+
+	useEffect(() => {
+		if (socket) {
+			socket.emit("join", { userType: "captain", userId: captain._id });
+
+			socket.on("new-ride", (data) => {
+				setRide(data);
+				console.log(data);
+				setCaptainRidePopupPanel(true);
+			});
+
+			const updateLocation = () => {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition((position) =>
+						socket.emit("update-location-captain", {
+							captainId: captain._id,
+							location: {
+								lat: position.coords.latitude,
+								lng: position.coords.longitude,
+							},
+						})
+					);
+					console.log("Location updated");
+				}
+			};
+
+			const locationInterval = setInterval(updateLocation, 10000);
+
+			return () => clearInterval(locationInterval);
+		}
+	}, [socket, captain]);
+
+	const confirmRide = async () => {
+		try {
+			const response = await axios.post(
+				`${import.meta.env.VITE_BASE_URL}/rides/confirm`,
+				{
+          rideId: ride._id,
+          userId: captain._id
+        },
+				{
+					withCredentials: true,
+				}
+			);
+			console.log(response);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 	return (
 		<div className="h-screen relative">
@@ -69,8 +121,10 @@ const CaptainHome = () => {
 				className="fixed z-10 bottom-0 translate-y-full bg-white w-full px-3 py-10 pt-12"
 			>
 				<CaptainRidePopup
+					ride={ride}
 					setCaptainRidePopupPanel={setCaptainRidePopupPanel}
 					setCaptainConfirmRidePopupPanel={setCaptainConfirmRidePopupPanel}
+					confirmRide={confirmRide}
 				/>
 			</div>
 			<div
@@ -78,6 +132,7 @@ const CaptainHome = () => {
 				className="fixed z-10 bottom-0 translate-y-full h-screen bg-white w-full px-3 py-10 pt-12"
 			>
 				<CaptainConfirmRidePopup
+          ride={ride}
 					setCaptainConfirmRidePopupPanel={setCaptainConfirmRidePopupPanel}
 				/>
 			</div>
