@@ -1,8 +1,10 @@
 import React from "react";
 
 const CaptainRidePopup = ({
+	ride,
 	setCaptainRidePopupPanel,
 	setCaptainConfirmRidePopupPanel,
+  confirmRide
 }) => {
 	return (
 		<div>
@@ -22,7 +24,11 @@ const CaptainRidePopup = ({
 						alt=""
 						className="h-14 w-14 rounded-full object-cover drop-shadow-md"
 					/>
-					<h2 className="text-lg font-medium">Pratik Sahoo</h2>
+					<h2 className="text-lg font-medium">
+						{ride?.user?.fullname?.firstName +
+							" " +
+							ride?.user?.fullname?.lastName}
+					</h2>
 				</div>
 				<h5 className="text-lg font-semibold">2.2 KM</h5>
 			</div>
@@ -30,23 +36,17 @@ const CaptainRidePopup = ({
 				<div className="w-full -mt-3">
 					<div className="flex gap-5 w-full justify-center items-center p-3 border-b-2">
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">562/11-A</h3>
-							<p className="text-sm text-gray-600 -mt-1">
-								Kankariya Talab, Ahmedabad
-							</p>
+							<h3 className="text-sm font-semibold">{ride.pickup}</h3>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3 border-b-2">
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">562/11-A</h3>
-							<p className="text-sm text-gray-600 -mt-1">
-								Kankariya Talab, Ahmedabad
-							</p>
+							<h3 className="text-sm font-semibold">{ride.destination}</h3>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3">
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">₹193.64</h3>
+							<h3 className="text-xl font-bold">₹{Math.round(ride.fare)}</h3>
 							<p className="text-sm text-gray-600 -mt-1">Cash</p>
 						</div>
 					</div>
@@ -56,6 +56,7 @@ const CaptainRidePopup = ({
 						onClick={() => {
 							setCaptainRidePopupPanel(false);
 							setCaptainConfirmRidePopupPanel(true);
+              confirmRide();
 						}}
 						className="w-full mt-5 bg-green-600 text-white rounded-lg p-2 font-semibold"
 					>

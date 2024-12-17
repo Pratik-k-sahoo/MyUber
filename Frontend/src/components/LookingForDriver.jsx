@@ -40,17 +40,19 @@ const LookingForDriver = ({
 						<FaSquare />
 						<div className="w-4/5">
 							<h3 className="text-xl font-bold">
-								{routes.pickUp?.structured_formatting?.main_text}
+								{routes.destination?.structured_formatting?.main_text}
 							</h3>
 							<p className="text-sm text-gray-600 -mt-1">
-								{routes.pickUp?.structured_formatting?.secondary_text}
+								{routes.destination?.structured_formatting?.secondary_text}
 							</p>
 						</div>
 					</div>
 					<div className="flex gap-5 w-full justify-center items-center p-3">
 						<IoIosCash />
 						<div className="w-4/5">
-							<h3 className="text-xl font-bold">₹{fare[vehicleType]}</h3>
+							<h3 className="text-xl font-bold">
+								₹{Math.floor(fare[vehicleType])}
+							</h3>
 							<p className="text-sm text-gray-600 -mt-1">Cash</p>
 						</div>
 					</div>
